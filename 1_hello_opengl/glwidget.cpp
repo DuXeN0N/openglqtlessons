@@ -1,45 +1,71 @@
-/****************************************************************************
-**
-** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "glwidget.h"
+#include <QGridLayout>
+#include <QPushButton>
 
+GlWidget::GlWidget(const QGLFormat& format, QWidget *parent) :
+    QGLWidget(format, parent),
+    triangleColor(Qt::red),
+    A( 1.0f, 0.0f, -2.0f),
+    B( 0.0f, 1.0f, -2.0f),
+    C(-1.0f, 0.0f, -2.0f) {
+  CreateWidgets();
+}
+
+void GlWidget::CreateWidgets() {
+  settings    = new QWidget;
+  colorDialog = new QColorDialog();
+
+  QPushButton *buttonColor  = new QPushButton("&Change color");
+  QPushButton *buttonUpdate = new QPushButton("&Update");
+  QGridLayout *layout       = new QGridLayout;
+
+  axEdit = new QLineEdit("1.0");
+  bxEdit = new QLineEdit("0.0");
+  cxEdit = new QLineEdit("-1.0");
+  ayEdit = new QLineEdit("0.0");
+  byEdit = new QLineEdit("1.0");
+  cyEdit = new QLineEdit("0.0");
+
+  layout->addWidget(axEdit, 0, 0);
+  layout->addWidget(ayEdit, 0, 1);
+  layout->addWidget(bxEdit, 1, 0);
+  layout->addWidget(byEdit, 1, 1);
+  layout->addWidget(cxEdit, 2, 0);
+  layout->addWidget(cyEdit, 2, 1);
+  layout->addWidget(buttonColor, 3, 0);
+  layout->addWidget(buttonUpdate, 3, 1);
+
+  settings->setLayout       (layout);
+  settings->setWindowFlags  (Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
+  settings->setWindowOpacity(0.75f);
+  settings->setFixedSize    (180, 160);
+  settings->move            (x() + 9, y() + 29);
+  settings->show();
+
+  connect(colorDialog,  SIGNAL(currentColorChanged(QColor)), this, SLOT(changeColor(QColor)));
+  connect(buttonColor,  SIGNAL(clicked()),                   this, SLOT(showColorDialog()));
+  connect(buttonUpdate, SIGNAL(clicked()),                   this, SLOT(updateCoordinates()));
+  connect(buttonUpdate, SIGNAL(clicked()),                   this, SLOT(updateGL()));
+}
+
+void GlWidget::showColorDialog() {
+  colorDialog->show();
+}
+
+void GlWidget::changeColor(QColor newColor) {
+  triangleColor = newColor;
+}
+
+void GlWidget::updateCoordinates() {
+    vertices[0].setX(axEdit->text().toFloat());
+    vertices[0].setY(ayEdit->text().toFloat());
+    vertices[1].setX(bxEdit->text().toFloat());
+    vertices[1].setY(byEdit->text().toFloat());
+    vertices[2].setX(cxEdit->text().toFloat());
+    vertices[2].setY(cyEdit->text().toFloat());
+
+  qDebug() << vertices;
+}
 void GlWidget::initializeGL()
 {
   glEnable(GL_DEPTH_TEST);
@@ -47,19 +73,15 @@ void GlWidget::initializeGL()
 
   qglClearColor(QColor(Qt::lightGray));
 
-  // load and link shaders
   if (!prepareShaderProgram( ":/vertex_shader.vert", ":/fragment_shader.frag")) {
     return;
   }
 
-  vertices << QVector3D( 1.0f, 0.0f, -2.0f)
-           << QVector3D( 0.0f, 1.0f, -2.0f)
-           << QVector3D(-1.0f, 0.0f, -2.0f);
+  vertices << A << B << C;
 }
 
 bool GlWidget::prepareShaderProgram(const QString& vertexShaderPath,
                                     const QString& fragmentShaderPath ) {
-  // 1). Load and compile the vertex shader
   bool result = shaderProgram.addShaderFromSourceFile(QGLShader::Vertex,
                                                       vertexShaderPath );
 
@@ -67,14 +89,12 @@ bool GlWidget::prepareShaderProgram(const QString& vertexShaderPath,
     qWarning() << shaderProgram.log();
   }
 
-  // 2). Load and compile the fragment shader
   result = shaderProgram.addShaderFromSourceFile(QGLShader::Fragment,
                                                  fragmentShaderPath );
   if (!result) {
     qWarning() << shaderProgram.log();
   }
 
-  // 3). Finally we link them to resolve any references
   result = shaderProgram.link();
   if (!result) {
     qWarning() << "Could not link shader program:"
@@ -90,12 +110,12 @@ void GlWidget::resizeGL(int width, int height) {
   }
 
   projectionMatrix.setToIdentity();
-  projectionMatrix.perspective(60.0,                           // angle
-                               (float) width / (float) height, // aspect ratio
-                               0.001,                          // nearPlane
-                               1000);                          // farPlane
+  projectionMatrix.perspective(60.0,
+                               (float) width / (float) height,
+                               0.001f,
+                               1000);
 
-  glViewport(0, 0, width, height);  // set viewport
+  glViewport(0, 0, width, height);
 }
 
 void GlWidget::paintGL() {
@@ -109,7 +129,7 @@ void GlWidget::paintGL() {
                                              viewMatrix *
                                              modelMatrix);
 
-  shaderProgram.setUniformValue     ("color",  QColor(Qt::red));
+  shaderProgram.setUniformValue     ("color",  triangleColor);
   shaderProgram.setAttributeArray   ("vertex", vertices.constData());
   shaderProgram.enableAttributeArray("vertex");
 
@@ -117,4 +137,14 @@ void GlWidget::paintGL() {
 
   shaderProgram.disableAttributeArray("vertex");
   shaderProgram.release();
+}
+
+void GlWidget::closeEvent(QCloseEvent *ce) {
+  if(ce != NULL) {
+    settings->close();
+
+    if (colorDialog != NULL) {
+      colorDialog->close();
+    }
+  }
 }

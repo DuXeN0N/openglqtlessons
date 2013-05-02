@@ -1,48 +1,40 @@
-/****************************************************************************
-**
-** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
-// Add new headers for mouse events!
 #include <QMouseEvent>
 #include <QWheelEvent>
-
+#include <QSizePolicy>
 #include "glwidget.h"
+
+GlWidget::GlWidget(const QGLFormat& format, QWidget *parent) :
+  QGLWidget(format, parent),
+  alpha  (25.0f),
+  beta   (25.0f),
+  distance(2.5f) {
+
+  groupBox = new QGroupBox(tr(""));
+
+  radioPoints    = new QRadioButton(tr("&Points"));
+  radioWireframe = new QRadioButton(tr("&Wireframe"));
+  radioSolid     = new QRadioButton(tr("&Solid"));
+
+  radioSolid->setChecked(true);
+
+  QVBoxLayout *vbox = new QVBoxLayout();
+
+  vbox->addWidget (radioPoints);
+  vbox->addWidget (radioWireframe);
+  vbox->addWidget (radioSolid);
+  vbox->addStretch(1);
+
+  groupBox->setLayout       (vbox);
+  groupBox->setWindowOpacity(0.75f);
+  groupBox->setWindowFlags  (Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
+  groupBox->move            (pos().x() + 9, pos().y() + 28);
+  groupBox->setFixedSize    (100, 100);
+  groupBox->show();
+  
+  connect(radioPoints,    SIGNAL(clicked()), this, SLOT(updateGL()));
+  connect(radioWireframe, SIGNAL(clicked()), this, SLOT(updateGL()));
+  connect(radioSolid,     SIGNAL(clicked()), this, SLOT(updateGL()));
+}
 
 void GlWidget::initializeGL()
 {
@@ -51,12 +43,10 @@ void GlWidget::initializeGL()
 
   qglClearColor(QColor(Qt::lightGray));
 
-  // load and link shaders
   if (!prepareShaderProgram( ":/vertex_shader.vert", ":/fragment_shader.frag")) {
     return;
   }
 
-  // list of cube's vertices
   vertices
     << QVector3D(-0.5f, -0.5f,  0.5f) << QVector3D( 0.5f, -0.5f,  0.5f) << QVector3D( 0.5f,  0.5f,  0.5f) // Front
     << QVector3D( 0.5f,  0.5f,  0.5f) << QVector3D(-0.5f,  0.5f,  0.5f) << QVector3D(-0.5f, -0.5f,  0.5f)
@@ -74,7 +64,6 @@ void GlWidget::initializeGL()
 
 bool GlWidget::prepareShaderProgram(const QString& vertexShaderPath,
                                     const QString& fragmentShaderPath ) {
-  // 1). Load and compile the vertex shader
   bool result = shaderProgram.addShaderFromSourceFile(QGLShader::Vertex,
                                                       vertexShaderPath );
 
@@ -82,14 +71,12 @@ bool GlWidget::prepareShaderProgram(const QString& vertexShaderPath,
     qWarning() << shaderProgram.log();
   }
 
-  // 2). Load and compile the fragment shader
   result = shaderProgram.addShaderFromSourceFile(QGLShader::Fragment,
                                                  fragmentShaderPath );
   if (!result) {
     qWarning() << shaderProgram.log();
   }
 
-  // 3). Finally we link them to resolve any references
   result = shaderProgram.link();
   if (!result) {
     qWarning() << "Could not link shader program:"
@@ -110,7 +97,7 @@ void GlWidget::resizeGL(int width, int height) {
                                0.001,                          // nearPlane
                                1000);                          // farPlane
 
-  glViewport(0, 0, width, height);  // set viewport
+  glViewport(0, 0, width, height);
 }
 
 void GlWidget::paintGL() {
@@ -141,7 +128,21 @@ void GlWidget::paintGL() {
   shaderProgram.setAttributeArray   ("vertex", vertices.constData());
   shaderProgram.enableAttributeArray("vertex");
 
+  // IF POINTS
+  if (radioPoints->isChecked()) {
+    glPointSize(4.0f);
+    glDrawArrays(GL_POINTS, 0, vertices.size());
+  }
+
+  // IF WIREFRAME
+  if (radioWireframe->isChecked()) {
+   glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
+  }
+
+  // IF SOLID
+  if (radioSolid->isChecked()) {
   glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+  }
 
   shaderProgram.disableAttributeArray("vertex");
   shaderProgram.release();
@@ -152,6 +153,11 @@ void GlWidget::mousePressEvent(QMouseEvent *mpe) {
   mpe->accept();
 }
 
+void GlWidget::closeEvent(QCloseEvent *ce) {
+  if(ce != NULL) {
+    groupBox->close();
+  }
+}
 
 void GlWidget::mouseMoveEvent(QMouseEvent *mme) {
   int deltaX = mme->x() - lastMousePosition.x(),
@@ -181,8 +187,6 @@ void GlWidget::mouseMoveEvent(QMouseEvent *mme) {
   mme->accept();
 }
 
-// Increase or decrease the viewers distance
-// by 0.1 and update our GlWidget.
 void GlWidget::wheelEvent(QWheelEvent *we) {
   int delta = we->delta();
 

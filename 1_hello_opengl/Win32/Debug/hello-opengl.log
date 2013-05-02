@@ -1,0 +1,33 @@
+﻿Build started 12.12.2012 15:33:07.
+     1>Project "H:\Users\Disa\Documents\MIPT\mipt-opengl-qt-lessons\1_hello_opengl\hello-opengl.vcxproj" on node 3 (build target(s)).
+     1>H:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(298,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
+     1>InitializeBuildStatus:
+         Creating "Win32\Debug\hello-opengl.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       CustomBuild:
+         Moc'ing glwidget.h...
+         Rcc'ing resources.qrc...
+       ClCompile:
+         H:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IH:\Qt\4.8.4\include\QtCore /IH:\Qt\4.8.4\include\QtGui /IH:\Qt\4.8.4\include\QtOpenGL /IH:\Qt\4.8.4\include /IH:\Qt\4.8.4\include\ActiveQt /Idebug /IH:\Qt\4.8.4\mkspecs\default /Zi /nologo /W3 /WX- /Od /Oy- /D _WINDOWS /D UNICODE /D WIN32 /D QT_LARGEFILE_SUPPORT /D QT_DLL /D QT_OPENGL_LIB /D QT_GUI_LIB /D QT_CORE_LIB /D QT_HAVE_MMX /D QT_HAVE_3DNOW /D QT_HAVE_SSE /D QT_HAVE_MMXEXT /D QT_HAVE_SSE2 /D QT_THREAD_SUPPORT /Gm- /EHsc /MDd /GS- /fp:precise /Zc:wchar_t- /Zc:forScope /GR /Fo"Win32\Debug\\" /Fd"Win32\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt GeneratedFiles\Debug\moc_glwidget.cpp glwidget.cpp main.cpp -Zm200 -w34100 -w34189 
+         moc_glwidget.cpp
+         glwidget.cpp
+         main.cpp
+         Generating Code...
+         H:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IH:\Qt\4.8.4\include\QtCore /IH:\Qt\4.8.4\include\QtGui /IH:\Qt\4.8.4\include\QtOpenGL /IH:\Qt\4.8.4\include /IH:\Qt\4.8.4\include\ActiveQt /Idebug /IH:\Qt\4.8.4\mkspecs\default /Zi /nologo /W3 /WX- /Od /Oy- /D _WINDOWS /D UNICODE /D WIN32 /D QT_LARGEFILE_SUPPORT /D QT_DLL /D QT_OPENGL_LIB /D QT_GUI_LIB /D QT_CORE_LIB /D QT_HAVE_MMX /D QT_HAVE_3DNOW /D QT_HAVE_SSE /D QT_HAVE_MMXEXT /D QT_HAVE_SSE2 /D QT_THREAD_SUPPORT /Gm- /EHsc /MDd /GS- /fp:precise /Zc:wchar_t- /Zc:forScope /GR /Fo"Win32\Debug\\" /Fd"Win32\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt GeneratedFiles\qrc_resources.cpp -Zm200 -w34100 -w34189 
+         qrc_resources.cpp
+       Link:
+         H:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"debug\\hello-opengl.exe" /NOLOGO /LIBPATH:H:\Qt\4.8.4\lib /LIBPATH:H:\Qt\4.8.4\lib glu32.lib opengl32.lib gdi32.lib user32.lib H:\Qt\4.8.4\lib\qtmaind.lib H:\Qt\4.8.4\lib\QtOpenGLd4.lib H:\Qt\4.8.4\lib\QtGuid4.lib H:\Qt\4.8.4\lib\QtCored4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Win32\Debug\hello-opengl.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"H:\Users\Disa\Documents\MIPT\mipt-opengl-qt-lessons\1_hello_opengl\debug\hello-opengl.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X86 Win32\Debug\moc_glwidget.obj
+         Win32\Debug\qrc_resources.obj
+         Win32\Debug\glwidget.obj
+         Win32\Debug\main.obj "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" 
+         LINK : debug\\hello-opengl.exe not found or not built by the last incremental link; performing full link
+         hello-opengl.vcxproj -> H:\Users\Disa\Documents\MIPT\mipt-opengl-qt-lessons\1_hello_opengl\debug\hello-opengl.exe
+       Manifest:
+         H:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"debug\\hello-opengl.exe;#1" /manifest "Win32\Debug\hello-opengl.exe.intermediate.manifest"
+       FinalizeBuildStatus:
+         Deleting file "Win32\Debug\hello-opengl.unsuccessfulbuild".
+         Touching "Win32\Debug\hello-opengl.lastbuildstate".
+     1>Done Building Project "H:\Users\Disa\Documents\MIPT\mipt-opengl-qt-lessons\1_hello_opengl\hello-opengl.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.87

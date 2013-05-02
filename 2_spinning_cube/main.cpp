@@ -45,16 +45,13 @@ int main(int argc, char **argv)
 {
     QApplication a(argc, argv);
 
-    // Specify an OpenGL 3.3 format using the Core profile.
-    // That is, no old-school fixed pipeline functionality
     QGLFormat glFormat;
 
-    // glFormat.setVersion(4, 2);
+    // glFormat.setVersion(3, 3);
 
-    glFormat.setProfile      (QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
+    glFormat.setProfile      (QGLFormat::CoreProfile); // Qt >= 4.8.0
     glFormat.setSampleBuffers(true);
 
-    // Create a GLWidget requesting our format
     GlWidget w(glFormat);
     w.show();
 
@@ -65,5 +62,7 @@ int main(int argc, char **argv)
              << "\nGL_VERSION:\t"
              << QString((char*)glGetString(GL_VERSION)).trimmed();
             //<<  "GL_SHADING_LANGUAGE_VERSION" << glGetString(GL_);
+
+
     return a.exec();
 }
