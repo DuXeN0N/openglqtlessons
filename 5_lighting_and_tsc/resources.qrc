@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>vertex_shader.vert</file>
+        <file>fragment_shader.frag</file>
+        <file>texture.png</file>
+        <file>lighting_fragment_shader.frag</file>
+        <file>lighting_vertex_shader.vert</file>
+        <file>lighting_lambert_fragment_shader.frag</file>
+        <file>lighting_lambert_vertex_shader.vert</file>
+        <file>lighting_toon_fragment_shader.frag</file>
+        <file>lighting_toon_vertex_shader.vert</file>
+        <file>lighting_ss_vertex_shader.vert</file>
+        <file>lighting_ss_fragment_shader.frag</file>
+    </qresource>
+</RCC>
